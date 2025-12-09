@@ -1,122 +1,307 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+// パッケージの読み込み
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    // .envが見つからなくてもクラッシュしないようにする
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("Warning: .env file not found or empty. $e");
+  }
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // AWS接続状態を管理
+  bool _isAmplifyConfigured = false;
+  String _errorMsg = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _configureAmplify();
+  }
+
+  Future<void> _configureAmplify() async {
+    // すでに設定済みなら何もしない（ホットリロード対策）
+    if (Amplify.isConfigured) {
+      setState(() => _isAmplifyConfigured = true);
+      return;
+    }
+
+    try {
+      final userPoolId = dotenv.env['COGNITO_USER_POOL_ID'];
+      final clientId = dotenv.env['COGNITO_CLIENT_ID'];
+      final region = dotenv.env['COGNITO_REGION'];
+
+      if (userPoolId == null || clientId == null || region == null) {
+        throw Exception("IDが.envに設定されていません");
+      }
+
+      // AWS設定データ（手動構成）
+      final amplifyConfig = {
+        "UserAgent": "aws-amplify-cli/2.0",
+        "Version": "1.0",
+        "auth": {
+          "plugins": {
+            "awsCognitoAuthPlugin": {
+              "UserAgent": "aws-amplify-cli/0.1.0",
+              "Version": "0.1.0",
+              "IdentityManager": {"Default": {}},
+              "CognitoUserPool": {
+                "Default": {
+                  "PoolId": userPoolId,
+                  "AppClientId": clientId,
+                  "Region": region,
+                },
+              },
+              "Auth": {
+                "Default": {"authenticationFlowType": "USER_SRP_AUTH"},
+              },
+            },
+          },
+        },
+      };
+
+      // プラグイン追加と設定
+      final auth = AmplifyAuthCognito();
+      await Amplify.addPlugin(auth);
+      await Amplify.configure(jsonEncode(amplifyConfig));
+
+      setState(() => _isAmplifyConfigured = true);
+      debugPrint('✅ AWS接続成功！');
+    } catch (e) {
+      debugPrint('❌ AWS接続エラー: $e');
+      setState(() => _errorMsg = e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'AI Image Diary',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: _isAmplifyConfigured
+          ? const SignUpScreen()
+          : Scaffold(
+              body: Center(
+                child: _errorMsg.isEmpty
+                    ? const CircularProgressIndicator()
+                    : Text(
+                        "AWS接続エラー:\n$_errorMsg",
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+              ),
+            ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+// --- 登録画面（認証機能付き） ---
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _SignUpScreenState extends State<SignUpScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _codeController = TextEditingController();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  bool _isVerificationStep = false;
+
+  // 1. 新規登録リクエスト
+  Future<void> _signUp() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showError("メールアドレスとパスワードを入力してください");
+      return;
+    }
+
+    try {
+      final result = await Amplify.Auth.signUp(
+        username: email,
+        password: password,
+        options: SignUpOptions(
+          userAttributes: {AuthUserAttributeKey.email: email},
+        ),
+      );
+
+      setState(() {
+        _isVerificationStep = true;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('確認メールを送信しました。コードを入力してください。')),
+        );
+      }
+    } on AuthException catch (e) {
+      _showError('登録エラー: ${e.message}');
+    } catch (e) {
+      _showError('予期せぬエラー: $e');
+    }
+  }
+
+  // 2. 確認コードの送信
+  Future<void> _confirmSignUp() async {
+    final email = _emailController.text.trim();
+    final code = _codeController.text.trim();
+
+    try {
+      final result = await Amplify.Auth.confirmSignUp(
+        username: email,
+        confirmationCode: code,
+      );
+
+      if (result.isSignUpComplete) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("登録完了！"),
+              content: const Text("アカウント作成に成功しました！"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } on AuthException catch (e) {
+      _showError('認証エラー: ${e.message}');
+    }
+  }
+
+  void _showError(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      appBar: AppBar(title: const Text('新規登録')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: _isVerificationStep
+              ? _buildVerificationForm()
+              : _buildSignUpForm(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildSignUpForm() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'アカウント作成',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 30),
+        TextField(
+          controller: _emailController,
+          decoration: const InputDecoration(
+            labelText: 'メールアドレス',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.email),
+          ),
+        ),
+        const SizedBox(height: 15),
+        TextField(
+          controller: _passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'パスワード (大文字・数字含む8文字以上)',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.lock),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _signUp,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(16),
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('登録コードを送信'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerificationForm() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.mark_email_read, size: 80, color: Colors.green),
+        const SizedBox(height: 20),
+        const Text(
+          '確認コードを入力',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const Text('メールに届いた6桁の数字を入力してください'),
+        const SizedBox(height: 30),
+        TextField(
+          controller: _codeController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: '確認コード (例: 123456)',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.vpn_key),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _confirmSignUp,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(16),
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('認証して完了！'),
+          ),
+        ),
+        TextButton(
+          onPressed: () => setState(() => _isVerificationStep = false),
+          child: const Text('戻る'),
+        ),
+      ],
     );
   }
 }
