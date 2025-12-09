@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-// パッケージの読み込み
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -8,7 +7,6 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    // .envが見つからなくてもクラッシュしないようにする
     await dotenv.load(fileName: ".env");
   } catch (e) {
     debugPrint("Warning: .env file not found or empty. $e");
@@ -24,7 +22,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // AWS接続状態を管理
   bool _isAmplifyConfigured = false;
   String _errorMsg = "";
 
@@ -35,7 +32,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _configureAmplify() async {
-    // すでに設定済みなら何もしない（ホットリロード対策）
     if (Amplify.isConfigured) {
       setState(() => _isAmplifyConfigured = true);
       return;
@@ -50,7 +46,6 @@ class _MyAppState extends State<MyApp> {
         throw Exception("IDが.envに設定されていません");
       }
 
-      // AWS設定データ（手動構成）
       final amplifyConfig = {
         "UserAgent": "aws-amplify-cli/2.0",
         "Version": "1.0",
@@ -64,18 +59,17 @@ class _MyAppState extends State<MyApp> {
                 "Default": {
                   "PoolId": userPoolId,
                   "AppClientId": clientId,
-                  "Region": region,
-                },
+                  "Region": region
+                }
               },
               "Auth": {
-                "Default": {"authenticationFlowType": "USER_SRP_AUTH"},
-              },
-            },
-          },
-        },
+                "Default": {"authenticationFlowType": "USER_SRP_AUTH"}
+              }
+            }
+          }
+        }
       };
 
-      // プラグイン追加と設定
       final auth = AmplifyAuthCognito();
       await Amplify.addPlugin(auth);
       await Amplify.configure(jsonEncode(amplifyConfig));
@@ -102,18 +96,15 @@ class _MyAppState extends State<MyApp> {
               body: Center(
                 child: _errorMsg.isEmpty
                     ? const CircularProgressIndicator()
-                    : Text(
-                        "AWS接続エラー:\n$_errorMsg",
+                    : Text("AWS接続エラー:\n$_errorMsg",
                         style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
+                        textAlign: TextAlign.center),
               ),
             ),
     );
   }
 }
 
-// --- 登録画面（認証機能付き） ---
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -128,7 +119,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _isVerificationStep = false;
 
-  // 1. 新規登録リクエスト
   Future<void> _signUp() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -143,7 +133,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         username: email,
         password: password,
         options: SignUpOptions(
-          userAttributes: {AuthUserAttributeKey.email: email},
+          userAttributes: {
+            AuthUserAttributeKey.email: email,
+          },
         ),
       );
 
@@ -163,7 +155,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  // 2. 確認コードの送信
   Future<void> _confirmSignUp() async {
     final email = _emailController.text.trim();
     final code = _codeController.text.trim();
@@ -223,28 +214,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          'アカウント作成',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
+        const Text('アカウント作成',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         const SizedBox(height: 30),
         TextField(
           controller: _emailController,
           decoration: const InputDecoration(
-            labelText: 'メールアドレス',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.email),
-          ),
+              labelText: 'メールアドレス',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.email)),
         ),
         const SizedBox(height: 15),
         TextField(
           controller: _passwordController,
           obscureText: true,
           decoration: const InputDecoration(
-            labelText: 'パスワード (大文字・数字含む8文字以上)',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.lock),
-          ),
+              labelText: 'パスワード (大文字・数字含む8文字以上)',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.lock)),
         ),
         const SizedBox(height: 20),
         SizedBox(
@@ -252,10 +239,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: ElevatedButton(
             onPressed: _signUp,
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(16),
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-            ),
+                padding: const EdgeInsets.all(16),
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white),
             child: const Text('登録コードを送信'),
           ),
         ),
@@ -269,20 +255,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       children: [
         const Icon(Icons.mark_email_read, size: 80, color: Colors.green),
         const SizedBox(height: 20),
-        const Text(
-          '確認コードを入力',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
+        const Text('確認コードを入力',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         const Text('メールに届いた6桁の数字を入力してください'),
         const SizedBox(height: 30),
         TextField(
           controller: _codeController,
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
-            labelText: '確認コード (例: 123456)',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.vpn_key),
-          ),
+              labelText: '確認コード (例: 123456)',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.vpn_key)),
         ),
         const SizedBox(height: 20),
         SizedBox(
@@ -290,17 +273,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: ElevatedButton(
             onPressed: _confirmSignUp,
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(16),
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-            ),
+                padding: const EdgeInsets.all(16),
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white),
             child: const Text('認証して完了！'),
           ),
         ),
         TextButton(
           onPressed: () => setState(() => _isVerificationStep = false),
           child: const Text('戻る'),
-        ),
+        )
       ],
     );
   }
