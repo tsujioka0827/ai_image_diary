@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'home_screen.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,6 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 content: Text('ログイン成功！'), backgroundColor: Colors.green),
           );
           // ※画面移動はあとで実装します
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
         }
       }
     } on AuthException catch (e) {
@@ -107,6 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: const Text('ログイン'),
                 ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  // 登録画面へ移動する（pushなら「戻る」ボタンで戻ってこれる）
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpScreen()),
+                  );
+                },
+                child: const Text('アカウントをお持ちでない方はこちら'),
               ),
             ],
           ),
