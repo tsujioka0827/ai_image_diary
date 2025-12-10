@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'screens/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,7 +92,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: _isAmplifyConfigured
-          ? const SignUpScreen()
+          ? const LoginScreen()
           : Scaffold(
               body: Center(
                 child: _errorMsg.isEmpty
