@@ -1,0 +1,248 @@
+type Diary {
+  id: ID!
+  title: String!
+  content: String!
+  date: AWSDate!
+  imageUrl: String
+  s3Key: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelDiaryConnection {
+  items: [Diary]!
+  nextToken: String
+}
+
+input ModelDiaryFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  content: ModelStringInput
+  date: ModelStringInput
+  imageUrl: ModelStringInput
+  s3Key: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelDiaryFilterInput]
+  or: [ModelDiaryFilterInput]
+  not: ModelDiaryFilterInput
+  owner: ModelStringInput
+}
+
+type Query {
+  getDiary(id: ID!): Diary
+  listDiaries(filter: ModelDiaryFilterInput, limit: Int, nextToken: String): ModelDiaryConnection
+}
+
+input ModelDiaryConditionInput {
+  title: ModelStringInput
+  content: ModelStringInput
+  date: ModelStringInput
+  imageUrl: ModelStringInput
+  s3Key: ModelStringInput
+  and: [ModelDiaryConditionInput]
+  or: [ModelDiaryConditionInput]
+  not: ModelDiaryConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateDiaryInput {
+  id: ID
+  title: String!
+  content: String!
+  date: AWSDate!
+  imageUrl: String
+  s3Key: String
+}
+
+input UpdateDiaryInput {
+  id: ID!
+  title: String
+  content: String
+  date: AWSDate
+  imageUrl: String
+  s3Key: String
+}
+
+input DeleteDiaryInput {
+  id: ID!
+}
+
+type Mutation {
+  createDiary(input: CreateDiaryInput!, condition: ModelDiaryConditionInput): Diary
+  updateDiary(input: UpdateDiaryInput!, condition: ModelDiaryConditionInput): Diary
+  deleteDiary(input: DeleteDiaryInput!, condition: ModelDiaryConditionInput): Diary
+}
+
+input ModelSubscriptionDiaryFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  content: ModelSubscriptionStringInput
+  date: ModelSubscriptionStringInput
+  imageUrl: ModelSubscriptionStringInput
+  s3Key: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionDiaryFilterInput]
+  or: [ModelSubscriptionDiaryFilterInput]
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateDiary(filter: ModelSubscriptionDiaryFilterInput, owner: String): Diary @aws_subscribe(mutations: ["createDiary"])
+  onUpdateDiary(filter: ModelSubscriptionDiaryFilterInput, owner: String): Diary @aws_subscribe(mutations: ["updateDiary"])
+  onDeleteDiary(filter: ModelSubscriptionDiaryFilterInput, owner: String): Diary @aws_subscribe(mutations: ["deleteDiary"])
+}
