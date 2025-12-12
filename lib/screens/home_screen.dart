@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchDiaries(); // 画面が開いたらデータを読み込む！
   }
 
-  // ★クラウドから日記一覧を取得する関数
+  // クラウドから日記一覧を取得する関数
   Future<void> _fetchDiaries() async {
     try {
       final request = ModelQueries.list(Diary.classType);
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // ★「＋」を押して戻ってきたら、リストを更新する！
+          // リストを更新する
           await Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const CreateDiaryScreen()),
           );
