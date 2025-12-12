@@ -1,18 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
+// ↓↓↓ ★ここが魔法の呪文！「偽物のAmplifyAPIは隠す（hide）」という命令です
+import 'package:amplify_flutter/amplify_flutter.dart' hide AmplifyAPI;
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_api/amplify_api.dart'; // これで本物だけが見えるようになります
+import 'package:ai_image_diary/models/ModelProvider.dart';
+import 'package:ai_image_diary/amplifyconfiguration.dart';
 import 'screens/login_screen.dart';
-import 'screens/signup_screen.dart';
+import 'screens/home_screen.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await dotenv.load(fileName: ".env");
-  } catch (e) {
-    debugPrint("Warning: .env file not found or empty. $e");
-  }
+void main() {
   runApp(const MyApp());
 }
 
@@ -25,7 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isAmplifyConfigured = false;
-  String _errorMsg = "";
+  bool _isSignedIn = false;
 
   @override
   void initState() {
@@ -34,53 +30,28 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _configureAmplify() async {
-    if (Amplify.isConfigured) {
-      setState(() => _isAmplifyConfigured = true);
-      return;
-    }
-
     try {
-      final userPoolId = dotenv.env['COGNITO_USER_POOL_ID'];
-      final clientId = dotenv.env['COGNITO_CLIENT_ID'];
-      final region = dotenv.env['COGNITO_REGION'];
+      if (!Amplify.isConfigured) {
+        final auth = AmplifyAuthCognito();
 
-      if (userPoolId == null || clientId == null || region == null) {
-        throw Exception("IDが.envに設定されていません");
+        // ★偽物を隠したので、普通に書くだけで「本物」が使われます！
+        final api = AmplifyAPI(
+            options: APIPluginOptions(modelProvider: ModelProvider.instance));
+
+        await Amplify.addPlugins([auth, api]);
+        await Amplify.configure(amplifyconfig);
       }
 
-      final amplifyConfig = {
-        "UserAgent": "aws-amplify-cli/2.0",
-        "Version": "1.0",
-        "auth": {
-          "plugins": {
-            "awsCognitoAuthPlugin": {
-              "UserAgent": "aws-amplify-cli/0.1.0",
-              "Version": "0.1.0",
-              "IdentityManager": {"Default": {}},
-              "CognitoUserPool": {
-                "Default": {
-                  "PoolId": userPoolId,
-                  "AppClientId": clientId,
-                  "Region": region
-                }
-              },
-              "Auth": {
-                "Default": {"authenticationFlowType": "USER_SRP_AUTH"}
-              }
-            }
-          }
-        }
-      };
+      final session = await Amplify.Auth.fetchAuthSession();
 
-      final auth = AmplifyAuthCognito();
-      await Amplify.addPlugin(auth);
-      await Amplify.configure(jsonEncode(amplifyConfig));
+      setState(() {
+        _isSignedIn = session.isSignedIn;
+        _isAmplifyConfigured = true;
+      });
 
-      setState(() => _isAmplifyConfigured = true);
-      debugPrint('✅ AWS接続成功！');
+      print('Amplify設定完了。ログイン状態: $_isSignedIn');
     } catch (e) {
-      debugPrint('❌ AWS接続エラー: $e');
-      setState(() => _errorMsg = e.toString());
+      print('Amplify設定エラー: $e');
     }
   }
 
@@ -88,21 +59,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AI Image Diary',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
       home: _isAmplifyConfigured
-          ? const LoginScreen()
-          : Scaffold(
-              body: Center(
-                child: _errorMsg.isEmpty
-                    ? const CircularProgressIndicator()
-                    : Text("AWS接続エラー:\n$_errorMsg",
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center),
-              ),
-            ),
+          ? (_isSignedIn ? const HomeScreen() : const LoginScreen())
+          : const Scaffold(body: Center(child: CircularProgressIndicator())),
     );
   }
 }
