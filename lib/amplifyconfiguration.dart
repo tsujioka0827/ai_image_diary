@@ -21,6 +21,14 @@ const amplifyconfig = '''{
                 "IdentityManager": {
                     "Default": {}
                 },
+                "AppSync": {
+                    "Default": {
+                        "ApiUrl": "https://soddnyl2tngypj42of72dsopwm.appsync-api.ap-northeast-1.amazonaws.com/graphql",
+                        "Region": "ap-northeast-1",
+                        "AuthMode": "AMAZON_COGNITO_USER_POOLS",
+                        "ClientDatabasePrefix": "aiimagediary_AMAZON_COGNITO_USER_POOLS"
+                    }
+                },
                 "CredentialsProvider": {
                     "CognitoIdentity": {
                         "Default": {
@@ -39,32 +47,24 @@ const amplifyconfig = '''{
                 "Auth": {
                     "Default": {
                         "authenticationFlowType": "USER_SRP_AUTH",
-                        "socialProviders": [],
-                        "usernameAttributes": [
-                            "EMAIL"
-                        ],
-                        "signupAttributes": [
-                            "EMAIL"
+                        "mfaConfiguration": "OFF",
+                        "mfaTypes": [
+                            "SMS"
                         ],
                         "passwordProtectionSettings": {
                             "passwordPolicyMinLength": 8,
                             "passwordPolicyCharacters": []
                         },
-                        "mfaConfiguration": "OFF",
-                        "mfaTypes": [
-                            "SMS"
+                        "signupAttributes": [
+                            "EMAIL"
+                        ],
+                        "socialProviders": [],
+                        "usernameAttributes": [
+                            "EMAIL"
                         ],
                         "verificationMechanisms": [
                             "EMAIL"
                         ]
-                    }
-                },
-                "AppSync": {
-                    "Default": {
-                        "ApiUrl": "https://soddnyl2tngypj42of72dsopwm.appsync-api.ap-northeast-1.amazonaws.com/graphql",
-                        "Region": "ap-northeast-1",
-                        "AuthMode": "AMAZON_COGNITO_USER_POOLS",
-                        "ClientDatabasePrefix": "aiimagediary_AMAZON_COGNITO_USER_POOLS"
                     }
                 }
             }

@@ -1,0 +1,11 @@
+# 日記データの設計図
+# @model: データベースを作る魔法
+# @auth: 自分だけが見れるようにする鍵
+type Diary @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  title: String!          # タイトル（必須）
+  content: String!        # 本文（必須）
+  date: AWSDate!          # 日付（必須）
+  imageUrl: String        # 画像のURL（なくてもいい）
+  s3Key: String           # 画像のファイル名（なくてもいい）
+}

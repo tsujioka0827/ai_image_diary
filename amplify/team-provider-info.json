@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-aiimagediary-dev-33865-authRole",
+      "UnauthRoleArn": "arn:aws:iam::514994862031:role/amplify-aiimagediary-dev-33865-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::514994862031:role/amplify-aiimagediary-dev-33865-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-aiimagediary-dev-33865-deployment",
+      "UnauthRoleName": "amplify-aiimagediary-dev-33865-unauthRole",
+      "StackName": "amplify-aiimagediary-dev-33865",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:514994862031:stack/amplify-aiimagediary-dev-33865/11b65cb0-d743-11f0-be83-067fe0b7ca79",
+      "AmplifyAppId": "d3ggx8flauydu5"
+    },
+    "categories": {
+      "auth": {
+        "aiimagediary8348a041": {}
+      }
+    }
+  }
+}
