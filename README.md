@@ -22,9 +22,6 @@
 - [ ] AWS Cognito連携
 - [ ] S3への画像アップロード
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
 
 ## 🏗️ システム構成図 (System Architecture)
 
