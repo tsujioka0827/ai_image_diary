@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_api/amplify_api.dart'; // ← これが必要！
+import 'package:amplify_api/amplify_api.dart';
 import '../models/ModelProvider.dart';
 
 class CreateDiaryScreen extends StatefulWidget {
-  const CreateDiaryScreen({super.key});
+  // 【変更点1】編集する日記データを受け取るための「箱」を追加
+  // ? がついているので、空っぽ（新規作成）でもOKです
+  final Diary? diaryToEdit;
+
+  const CreateDiaryScreen({super.key, this.diaryToEdit});
 
   @override
   State<CreateDiaryScreen> createState() => _CreateDiaryScreenState();
@@ -13,6 +17,17 @@ class CreateDiaryScreen extends StatefulWidget {
 class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+
+  // 【変更点2】画面が開いた瞬間の処理
+  @override
+  void initState() {
+    super.initState();
+    // もし「編集モード（データが入っている）」なら、最初から入力欄に文字を表示しておく
+    if (widget.diaryToEdit != null) {
+      _titleController.text = widget.diaryToEdit!.title ?? '';
+      _contentController.text = widget.diaryToEdit!.content ?? '';
+    }
+  }
 
   Future<void> _saveDiary() async {
     final title = _titleController.text.trim();
@@ -26,28 +41,53 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
     }
 
     try {
-      final newDiary = Diary(
-        title: title,
-        content: content,
-        date: TemporalDate(DateTime.now()),
-      );
+      // ---------------------------------------------------------
+      // 【変更点3】ここが一番大事！「新規」か「更新」かの分岐点
+      // ---------------------------------------------------------
 
-      // ★ここが重要！DataStoreではなくAPIを使って保存します
-      final request = ModelMutations.create(newDiary);
+      // AWSへのリクエストを入れる箱を用意
+      GraphQLRequest<Diary>? request;
+
+      if (widget.diaryToEdit == null) {
+        // A. データがない = 「新規作成 (Create)」
+        final newDiary = Diary(
+          title: title,
+          content: content,
+          date: TemporalDate(DateTime.now()),
+        );
+        request = ModelMutations.create(newDiary);
+      } else {
+        // B. データがある = 「更新 (Update)」
+
+        // copyWith: 「IDはそのまま」で、タイトルと中身だけ書き換えたコピーを作る
+        final updatedDiary = widget.diaryToEdit!.copyWith(
+          title: title,
+          content: content,
+          // 日付は更新せず元のままにするか、更新日を入れるか選べます。
+          // 今回は内容の修正だけなので日付はいじりません。
+        );
+        request = ModelMutations.update(updatedDiary);
+      }
+
+      // 準備したリクエスト（作成 or 更新）を実行！
       final response = await Amplify.API.mutate(request: request).response;
 
       if (response.hasErrors) {
         print('保存エラー: ${response.errors}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存エラー: ${response.errors.first.message}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('保存エラー: ${response.errors.first.message}')),
+          );
+        }
         return;
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('保存しました！'), backgroundColor: Colors.green),
+          // メッセージも少し親切に分岐
+          SnackBar(
+              content: Text(widget.diaryToEdit == null ? '保存しました！' : '更新しました！'),
+              backgroundColor: Colors.green),
         );
         Navigator.pop(context);
       }
@@ -63,8 +103,13 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 画面タイトルも切り替え
+    final isEdit = widget.diaryToEdit != null;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('日記を書く')),
+      appBar: AppBar(
+        title: Text(isEdit ? '日記を編集' : '日記を書く'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -86,7 +131,8 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _saveDiary,
-                child: const Text('保存する'),
+                // ボタンの文字も切り替え
+                child: Text(isEdit ? '更新する' : '保存する'),
               ),
             ),
           ],
