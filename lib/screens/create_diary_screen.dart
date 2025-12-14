@@ -4,8 +4,6 @@ import 'package:amplify_api/amplify_api.dart';
 import '../models/ModelProvider.dart';
 
 class CreateDiaryScreen extends StatefulWidget {
-  // 【変更点1】編集する日記データを受け取るための「箱」を追加
-  // ? がついているので、空っぽ（新規作成）でもOKです
   final Diary? diaryToEdit;
 
   const CreateDiaryScreen({super.key, this.diaryToEdit});
@@ -18,7 +16,7 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
 
-  // 【変更点2】画面が開いた瞬間の処理
+  // 画面が開いた瞬間の処理
   @override
   void initState() {
     super.initState();
@@ -41,10 +39,6 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
     }
 
     try {
-      // ---------------------------------------------------------
-      // 【変更点3】ここが一番大事！「新規」か「更新」かの分岐点
-      // ---------------------------------------------------------
-
       // AWSへのリクエストを入れる箱を用意
       GraphQLRequest<Diary>? request;
 
@@ -63,13 +57,10 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
         final updatedDiary = widget.diaryToEdit!.copyWith(
           title: title,
           content: content,
-          // 日付は更新せず元のままにするか、更新日を入れるか選べます。
-          // 今回は内容の修正だけなので日付はいじりません。
         );
         request = ModelMutations.update(updatedDiary);
       }
 
-      // 準備したリクエスト（作成 or 更新）を実行！
       final response = await Amplify.API.mutate(request: request).response;
 
       if (response.hasErrors) {
@@ -84,7 +75,6 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          // メッセージも少し親切に分岐
           SnackBar(
               content: Text(widget.diaryToEdit == null ? '保存しました！' : '更新しました！'),
               backgroundColor: Colors.green),

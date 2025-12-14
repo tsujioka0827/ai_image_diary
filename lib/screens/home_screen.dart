@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _deleteDiary(Diary diaryToDelete) async {
-    // 念の為の確認ダイアログ（安心設計）
+    // 念の為の確認ダイアログ
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -82,8 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // 【変更点1】引数を受け取れるように改造！
-  // diaryToEdit があれば「編集」、なければ「新規」として扱います
+  // diaryToEdit があれば「編集」、なければ「新規」として扱う
   Future<void> _goToCreateDiary({Diary? diaryToEdit}) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -135,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        // 【変更点2】ボタンを2つ並べるために Row を使う
+                        // ボタンを2つ並べるために Row を使う
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min, // ボタンの幅を最小限にする呪文
                           children: [
