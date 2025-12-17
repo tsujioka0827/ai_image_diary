@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart'; // 次のAI機能で使うので残しておきます
+
 import '../models/ModelProvider.dart';
 
 class CreateDiaryScreen extends StatefulWidget {
@@ -16,11 +18,9 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
 
-  // 画面が開いた瞬間の処理
   @override
   void initState() {
     super.initState();
-    // もし「編集モード（データが入っている）」なら、最初から入力欄に文字を表示しておく
     if (widget.diaryToEdit != null) {
       _titleController.text = widget.diaryToEdit!.title ?? '';
       _contentController.text = widget.diaryToEdit!.content ?? '';
@@ -39,11 +39,9 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
     }
 
     try {
-      // AWSへのリクエストを入れる箱を用意
       GraphQLRequest<Diary>? request;
 
       if (widget.diaryToEdit == null) {
-        // A. データがない = 「新規作成 (Create)」
         final newDiary = Diary(
           title: title,
           content: content,
@@ -51,9 +49,6 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
         );
         request = ModelMutations.create(newDiary);
       } else {
-        // B. データがある = 「更新 (Update)」
-
-        // copyWith: 「IDはそのまま」で、タイトルと中身だけ書き換えたコピーを作る
         final updatedDiary = widget.diaryToEdit!.copyWith(
           title: title,
           content: content,
@@ -64,7 +59,7 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
       final response = await Amplify.API.mutate(request: request).response;
 
       if (response.hasErrors) {
-        print('保存エラー: ${response.errors}');
+        safePrint('保存エラー: ${response.errors}');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('保存エラー: ${response.errors.first.message}')),
@@ -82,7 +77,7 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
-      print('保存エラー: $e');
+      safePrint('保存エラー: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('エラー: $e'), backgroundColor: Colors.red),
@@ -93,7 +88,6 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 画面タイトルも切り替え
     final isEdit = widget.diaryToEdit != null;
 
     return Scaffold(
@@ -121,7 +115,6 @@ class _CreateDiaryScreenState extends State<CreateDiaryScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _saveDiary,
-                // ボタンの文字も切り替え
                 child: Text(isEdit ? '更新する' : '保存する'),
               ),
             ),

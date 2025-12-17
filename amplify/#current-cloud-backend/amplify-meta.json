@@ -12,37 +12,66 @@
       "AmplifyAppId": "d3ggx8flauydu5"
     }
   },
+  "api": {
+    "aiimagediary": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "aiimagediary8348a041"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authaiimagediary8348a041"
+            }
+          }
+        },
+        "GraphQLAPIIdOutput": "z6n5ssu5jfcellcglcsibv5foi",
+        "GraphQLAPIEndpointOutput": "https://soddnyl2tngypj42of72dsopwm.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync",
+      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiaiimagediary"
+      },
+      "lastPushDirHash": "0rI+r7M1GKps8fA8veuFQyUHLOg="
+    }
+  },
   "auth": {
     "aiimagediary8348a041": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
       "customAuth": false,
+      "dependsOn": [],
       "frontendAuthConfig": {
-        "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "signupAttributes": [
-          "EMAIL"
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
         ],
         "passwordProtectionSettings": {
           "passwordPolicyMinLength": 8,
           "passwordPolicyCharacters": []
         },
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
         ],
         "verificationMechanisms": [
           "EMAIL"
         ]
       },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/auth/aiimagediary8348a041-cloudformation-template.json",
-        "logicalId": "authaiimagediary8348a041"
-      },
-      "lastPushTimeStamp": "2025-12-12T10:32:22.398Z",
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
       "output": {
         "UserPoolId": "ap-northeast-1_X1RTuwXr6",
         "AppClientIDWeb": "1qln3s8712ktvopjrbh30od4dn",
@@ -52,41 +81,29 @@
         "IdentityPoolName": "aiimagediary8348a041_identitypool_8348a041__dev",
         "UserPoolName": "aiimagediary8348a041_userpool_8348a041"
       },
-      "lastPushDirHash": "HX3EZJyt2S2Y+MlXqIS9sPZZUzA="
+      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/auth/aiimagediary8348a041-cloudformation-template.json",
+        "logicalId": "authaiimagediary8348a041"
+      },
+      "lastPushDirHash": "xNWGpiKngLzgo7ZBCvcU4jESIxE="
     }
   },
-  "api": {
-    "aiimagediary": {
-      "service": "AppSync",
+  "storage": {
+    "s3afaf9083": {
+      "service": "S3",
       "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "auth",
-          "resourceName": "aiimagediary8348a041",
-          "attributes": [
-            "UserPoolId"
-          ]
-        }
-      ],
-      "output": {
-        "authConfig": {
-          "defaultAuthentication": {
-            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": {
-              "userPoolId": "authaiimagediary8348a041"
-            }
-          },
-          "additionalAuthenticationProviders": []
-        },
-        "GraphQLAPIIdOutput": "z6n5ssu5jfcellcglcsibv5foi",
-        "GraphQLAPIEndpointOutput": "https://soddnyl2tngypj42of72dsopwm.appsync-api.ap-northeast-1.amazonaws.com/graphql"
-      },
+      "dependsOn": [],
+      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/cloudformation-template.json",
-        "logicalId": "apiaiimagediary"
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storages3afaf9083"
       },
-      "lastPushTimeStamp": "2025-12-12T10:32:22.398Z",
-      "lastPushDirHash": "eqXzhEvqDKONV4WyzmwZZhtCXpY="
+      "output": {
+        "BucketName": "aiimagediary516e7981d63141faa54af17da6eccc0833865-dev",
+        "Region": "ap-northeast-1"
+      },
+      "lastPushDirHash": "XPvs2j+8kFmSds1e/emRc7cud4g="
     }
   }
 }

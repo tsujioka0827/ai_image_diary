@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "aiimagediary8348a041": {}
+      },
+      "api": {
+        "aiimagediary": {}
+      },
+      "storage": {
+        "s3afaf9083": {}
       }
     }
   }

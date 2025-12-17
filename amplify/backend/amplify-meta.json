@@ -38,11 +38,12 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync",
-      "lastPushTimeStamp": "2025-12-12T11:22:56.801Z",
+      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiaiimagediary"
-      }
+      },
+      "lastPushDirHash": "0rI+r7M1GKps8fA8veuFQyUHLOg="
     }
   },
   "auth": {
@@ -80,11 +81,29 @@
         "IdentityPoolName": "aiimagediary8348a041_identitypool_8348a041__dev",
         "UserPoolName": "aiimagediary8348a041_userpool_8348a041"
       },
-      "lastPushTimeStamp": "2025-12-12T11:22:56.831Z",
+      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/auth/aiimagediary8348a041-cloudformation-template.json",
         "logicalId": "authaiimagediary8348a041"
-      }
+      },
+      "lastPushDirHash": "xNWGpiKngLzgo7ZBCvcU4jESIxE="
+    }
+  },
+  "storage": {
+    "s3afaf9083": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storages3afaf9083"
+      },
+      "output": {
+        "BucketName": "aiimagediary516e7981d63141faa54af17da6eccc0833865-dev",
+        "Region": "ap-northeast-1"
+      },
+      "lastPushDirHash": "XPvs2j+8kFmSds1e/emRc7cud4g="
     }
   }
 }

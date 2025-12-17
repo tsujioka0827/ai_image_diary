@@ -66,7 +66,22 @@ const amplifyconfig = '''{
                             "EMAIL"
                         ]
                     }
+                },
+                "S3TransferUtility": {
+                    "Default": {
+                        "Bucket": "aiimagediary516e7981d63141faa54af17da6eccc0833865-dev",
+                        "Region": "ap-northeast-1"
+                    }
                 }
+            }
+        }
+    },
+    "storage": {
+        "plugins": {
+            "awsS3StoragePlugin": {
+                "bucket": "aiimagediary516e7981d63141faa54af17da6eccc0833865-dev",
+                "region": "ap-northeast-1",
+                "defaultAccessLevel": "guest"
             }
         }
     }
