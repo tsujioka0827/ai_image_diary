@@ -199,13 +199,33 @@
         }
       }
     },
+    "apiaiimagediary": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "Parameters": {
+          "AppSyncApiName": "aiimagediary",
+          "DynamoDBBillingMode": "PAY_PER_REQUEST",
+          "DynamoDBEnableServerSideEncryption": false,
+          "AuthCognitoUserPoolId": {
+            "Fn::GetAtt": [
+              "authaiimagediary8348a041",
+              "Outputs.UserPoolId"
+            ]
+          },
+          "S3DeploymentBucket": "amplify-aiimagediary-dev-33865-deployment",
+          "S3DeploymentRootKey": "amplify-appsync-files/c02985f6fd7f9ea3a54429faf7f83c4340e0459e",
+          "env": "dev"
+        }
+      }
+    },
     "authaiimagediary8348a041": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/auth/aiimagediary8348a041-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "aiimagediary8348a041_identitypool_8348a041",
-          "allowUnauthenticatedIdentities": false,
+          "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "aiimag8348a041",
           "userPoolName": "aiimagediary8348a041_userpool_8348a041",
           "autoVerifiedAttributes": "email",
@@ -253,22 +273,35 @@
         }
       }
     },
-    "apiaiimagediary": {
+    "storages3afaf9083": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
-          "AppSyncApiName": "aiimagediary",
-          "DynamoDBBillingMode": "PAY_PER_REQUEST",
-          "DynamoDBEnableServerSideEncryption": false,
-          "AuthCognitoUserPoolId": {
-            "Fn::GetAtt": [
-              "authaiimagediary8348a041",
-              "Outputs.UserPoolId"
-            ]
+          "bucketName": "aiimagediary516e7981d63141faa54af17da6eccc08",
+          "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
+          "selectedAuthenticatedPermissions": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject",
+          "unauthRoleName": {
+            "Ref": "UnauthRoleName"
           },
-          "S3DeploymentBucket": "amplify-aiimagediary-dev-33865-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/eeb4fe389934d81145457dc050f71400eacde9e8",
+          "authRoleName": {
+            "Ref": "AuthRoleName"
+          },
+          "s3PrivatePolicy": "Private_policy_afaf9083",
+          "s3ProtectedPolicy": "Protected_policy_afaf9083",
+          "s3PublicPolicy": "Public_policy_afaf9083",
+          "s3ReadPolicy": "read_policy_afaf9083",
+          "s3UploadsPolicy": "Uploads_policy_afaf9083",
+          "authPolicyName": "s3_amplify_afaf9083",
+          "unauthPolicyName": "s3_amplify_afaf9083",
+          "AuthenticatedAllowList": "ALLOW",
+          "GuestAllowList": "ALLOW",
+          "s3PermissionsAuthenticatedPrivate": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+          "s3PermissionsAuthenticatedProtected": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+          "s3PermissionsAuthenticatedPublic": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+          "s3PermissionsAuthenticatedUploads": "s3:PutObject",
+          "s3PermissionsGuestPublic": "s3:GetObject",
+          "s3PermissionsGuestUploads": "DISALLOW",
           "env": "dev"
         }
       }

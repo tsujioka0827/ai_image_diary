@@ -17,6 +17,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   amplify_datastore: ^2.8.0
   amplify_api: ^2.8.0
+  amplify_storage_s3: ^2.8.0
 
 dev_dependencies:
   flutter_test:

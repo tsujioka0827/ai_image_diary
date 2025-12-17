@@ -1,6 +1,6 @@
 {
   "identityPoolName": "aiimagediary8348a041_identitypool_8348a041",
-  "allowUnauthenticatedIdentities": false,
+  "allowUnauthenticatedIdentities": true,
   "resourceNameTruncated": "aiimag8348a041",
   "userPoolName": "aiimagediary8348a041_userpool_8348a041",
   "autoVerifiedAttributes": [
