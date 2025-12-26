@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:amplify_flutter/amplify_flutter.dart' hide AmplifyAPI;
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_api/amplify_api.dart'; // これで本物だけが見えるようになります
 import 'package:ai_image_diary/models/ModelProvider.dart';

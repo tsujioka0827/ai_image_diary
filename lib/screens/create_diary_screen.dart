@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart'; // 次のAI機能で使うので残しておきます
 
 import '../models/ModelProvider.dart';
 
