@@ -9,7 +9,8 @@
       "UnauthRoleName": "amplify-aiimagediary-dev-33865-unauthRole",
       "StackName": "amplify-aiimagediary-dev-33865",
       "StackId": "arn:aws:cloudformation:ap-northeast-1:514994862031:stack/amplify-aiimagediary-dev-33865/11b65cb0-d743-11f0-be83-067fe0b7ca79",
-      "AmplifyAppId": "d3ggx8flauydu5"
+      "AmplifyAppId": "d3ggx8flauydu5",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     }
   },
   "api": {
@@ -38,12 +39,37 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync",
-      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
+      "lastPushTimeStamp": "2026-01-08T10:02:37.932Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiaiimagediary"
       },
-      "lastPushDirHash": "0rI+r7M1GKps8fA8veuFQyUHLOg="
+      "lastPushDirHash": "3rVIOj9UGMumYlcGD7G6OplsBqE="
+    },
+    "apiForImage": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "generateImage",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/apiForImage-cloudformation-template.json",
+        "logicalId": "apiapiForImage"
+      },
+      "lastPushTimeStamp": "2026-01-08T10:02:37.934Z",
+      "output": {
+        "ApiName": "apiForImage",
+        "RootUrl": "https://3hp6919vub.execute-api.ap-northeast-1.amazonaws.com/dev",
+        "ApiId": "3hp6919vub"
+      },
+      "lastPushDirHash": "UYhvieb28eMg2JSU74o/PDNUCVs="
     }
   },
   "auth": {
@@ -81,29 +107,56 @@
         "IdentityPoolName": "aiimagediary8348a041_identitypool_8348a041__dev",
         "UserPoolName": "aiimagediary8348a041_userpool_8348a041"
       },
-      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
+      "lastPushTimeStamp": "2026-01-08T10:02:37.968Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/auth/aiimagediary8348a041-cloudformation-template.json",
         "logicalId": "authaiimagediary8348a041"
-      },
-      "lastPushDirHash": "xNWGpiKngLzgo7ZBCvcU4jESIxE="
+      }
     }
   },
   "storage": {
     "s3afaf9083": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation",
       "dependsOn": [],
-      "lastPushTimeStamp": "2025-12-17T15:54:02.754Z",
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
-        "logicalId": "storages3afaf9083"
-      },
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
       "output": {
         "BucketName": "aiimagediary516e7981d63141faa54af17da6eccc0833865-dev",
         "Region": "ap-northeast-1"
       },
-      "lastPushDirHash": "XPvs2j+8kFmSds1e/emRc7cud4g="
+      "lastPushTimeStamp": "2026-01-08T10:02:38.717Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storages3afaf9083"
+      },
+      "lastPushDirHash": "VnOWtFre5uUHjYCDro2vhX9M23w="
+    }
+  },
+  "function": {
+    "generateImage": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2026-01-08T09:12:08.761Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-01-08T09:12:11.797Z",
+      "distZipFilename": "generateImage-62473865535251734650-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-aiimagediary-dev-33865-deployment",
+        "s3Key": "amplify-builds/generateImage-62473865535251734650-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/function/generateImage-cloudformation-template.json",
+        "logicalId": "functiongenerateImage"
+      },
+      "lastPushTimeStamp": "2026-01-08T10:02:38.002Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::514994862031:role/aiimagediaryLambdaRole0ea7a13e-dev",
+        "Region": "ap-northeast-1",
+        "Arn": "arn:aws:lambda:ap-northeast-1:514994862031:function:generateImage-dev",
+        "Name": "generateImage-dev",
+        "LambdaExecutionRole": "aiimagediaryLambdaRole0ea7a13e-dev"
+      },
+      "lastPushDirHash": "bG8eSRQsFP7pcmsObFoDukwcvnw="
     }
   }
 }

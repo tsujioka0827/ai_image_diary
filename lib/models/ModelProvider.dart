@@ -26,7 +26,7 @@ export 'Diary.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "0b91b417f0ee9497c1631a6fe2da60ed";
+  String version = "495f15c3c91e264661f8c0289ca6ee59";
   @override
   List<amplify_core.ModelSchema> modelSchemas = [Diary.schema];
   @override

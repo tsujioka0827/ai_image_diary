@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:amplify_flutter/amplify_flutter.dart' hide AmplifyAPI;
+// Amplify関連のインポート
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_api/amplify_api.dart'; // これで本物だけが見えるようになります
-import 'package:ai_image_diary/models/ModelProvider.dart';
-import 'package:ai_image_diary/amplifyconfiguration.dart';
-import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
+
+// 生成されたモデルと設定ファイル
+import 'models/ModelProvider.dart';
+import 'amplifyconfiguration.dart';
+
+// 画面のインポート
+import 'screens/home_page.dart';
+// ※もしhome_screen.dartという名前なら 'screens/home_screen.dart' に直してください
 
 void main() {
   runApp(const MyApp());
@@ -20,9 +26,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isAmplifyConfigured = false;
-  bool _isSignedIn = false;
-
   @override
   void initState() {
     super.initState();
@@ -31,40 +34,34 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _configureAmplify() async {
     try {
-      if (!Amplify.isConfigured) {
-        final auth = AmplifyAuthCognito();
+      if (Amplify.isConfigured) return;
 
-        final storagePlugin = AmplifyStorageS3();
+      final auth = AmplifyAuthCognito();
 
-        // ★偽物を隠したので、普通に書くだけで「本物」が使われます！
-        final api = AmplifyAPI(
-            options: APIPluginOptions(modelProvider: ModelProvider.instance));
+      final api = AmplifyAPI(
+          options: APIPluginOptions(modelProvider: ModelProvider.instance));
 
-        await Amplify.addPlugins([auth, api, storagePlugin]);
-        await Amplify.configure(amplifyconfig);
-      }
+      final storage = AmplifyStorageS3();
 
-      final session = await Amplify.Auth.fetchAuthSession();
+      await Amplify.addPlugins([auth, api, storage]);
+      await Amplify.configure(amplifyconfig);
 
-      setState(() {
-        _isSignedIn = session.isSignedIn;
-        _isAmplifyConfigured = true;
-      });
-
-      print('Amplify設定完了。ログイン状態: $_isSignedIn');
-    } catch (e) {
-      print('Amplify設定エラー: $e');
+      safePrint('Amplify configured successfully'); // printの代わりにsafePrint推奨
+    } on Exception catch (e) {
+      safePrint('Error configuring Amplify: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'AI Image Diary',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
-      home: _isAmplifyConfigured
-          ? (_isSignedIn ? const HomeScreen() : const LoginScreen())
-          : const Scaffold(body: Center(child: CircularProgressIndicator())),
+    return Authenticator(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'AI Diary',
+        theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+        builder: Authenticator.builder(),
+        home: const HomePage(), // ※クラス名が HomeScreen なら書き換えてください
+      ),
     );
   }
 }

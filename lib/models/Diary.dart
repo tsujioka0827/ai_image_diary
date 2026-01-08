@@ -29,9 +29,8 @@ class Diary extends amplify_core.Model {
   final String id;
   final String? _title;
   final String? _content;
+  final String? _imageKey;
   final amplify_core.TemporalDate? _date;
-  final String? _imageUrl;
-  final String? _s3Key;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -48,17 +47,8 @@ class Diary extends amplify_core.Model {
       );
   }
   
-  String get title {
-    try {
-      return _title!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get title {
+    return _title;
   }
   
   String get content {
@@ -74,6 +64,10 @@ class Diary extends amplify_core.Model {
     }
   }
   
+  String? get imageKey {
+    return _imageKey;
+  }
+  
   amplify_core.TemporalDate get date {
     try {
       return _date!;
@@ -87,14 +81,6 @@ class Diary extends amplify_core.Model {
     }
   }
   
-  String? get imageUrl {
-    return _imageUrl;
-  }
-  
-  String? get s3Key {
-    return _s3Key;
-  }
-  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -103,16 +89,16 @@ class Diary extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Diary._internal({required this.id, required title, required content, required date, imageUrl, s3Key, createdAt, updatedAt}): _title = title, _content = content, _date = date, _imageUrl = imageUrl, _s3Key = s3Key, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Diary._internal({required this.id, title, required content, imageKey, required date, createdAt, updatedAt}): _title = title, _content = content, _imageKey = imageKey, _date = date, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Diary({String? id, required String title, required String content, required amplify_core.TemporalDate date, String? imageUrl, String? s3Key}) {
+  factory Diary({String? id, String? title, required String content, String? imageKey, required amplify_core.TemporalDate date, amplify_core.TemporalDateTime? createdAt}) {
     return Diary._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       title: title,
       content: content,
+      imageKey: imageKey,
       date: date,
-      imageUrl: imageUrl,
-      s3Key: s3Key);
+      createdAt: createdAt);
   }
   
   bool equals(Object other) {
@@ -126,9 +112,9 @@ class Diary extends amplify_core.Model {
       id == other.id &&
       _title == other._title &&
       _content == other._content &&
+      _imageKey == other._imageKey &&
       _date == other._date &&
-      _imageUrl == other._imageUrl &&
-      _s3Key == other._s3Key;
+      _createdAt == other._createdAt;
   }
   
   @override
@@ -142,9 +128,8 @@ class Diary extends amplify_core.Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("title=" + "$_title" + ", ");
     buffer.write("content=" + "$_content" + ", ");
+    buffer.write("imageKey=" + "$_imageKey" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
-    buffer.write("imageUrl=" + "$_imageUrl" + ", ");
-    buffer.write("s3Key=" + "$_s3Key" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -152,30 +137,30 @@ class Diary extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Diary copyWith({String? title, String? content, amplify_core.TemporalDate? date, String? imageUrl, String? s3Key}) {
+  Diary copyWith({String? title, String? content, String? imageKey, amplify_core.TemporalDate? date, amplify_core.TemporalDateTime? createdAt}) {
     return Diary._internal(
       id: id,
       title: title ?? this.title,
       content: content ?? this.content,
+      imageKey: imageKey ?? this.imageKey,
       date: date ?? this.date,
-      imageUrl: imageUrl ?? this.imageUrl,
-      s3Key: s3Key ?? this.s3Key);
+      createdAt: createdAt ?? this.createdAt);
   }
   
   Diary copyWithModelFieldValues({
-    ModelFieldValue<String>? title,
+    ModelFieldValue<String?>? title,
     ModelFieldValue<String>? content,
+    ModelFieldValue<String?>? imageKey,
     ModelFieldValue<amplify_core.TemporalDate>? date,
-    ModelFieldValue<String?>? imageUrl,
-    ModelFieldValue<String?>? s3Key
+    ModelFieldValue<amplify_core.TemporalDateTime?>? createdAt
   }) {
     return Diary._internal(
       id: id,
       title: title == null ? this.title : title.value,
       content: content == null ? this.content : content.value,
+      imageKey: imageKey == null ? this.imageKey : imageKey.value,
       date: date == null ? this.date : date.value,
-      imageUrl: imageUrl == null ? this.imageUrl : imageUrl.value,
-      s3Key: s3Key == null ? this.s3Key : s3Key.value
+      createdAt: createdAt == null ? this.createdAt : createdAt.value
     );
   }
   
@@ -183,23 +168,21 @@ class Diary extends amplify_core.Model {
     : id = json['id'],
       _title = json['title'],
       _content = json['content'],
+      _imageKey = json['imageKey'],
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
-      _imageUrl = json['imageUrl'],
-      _s3Key = json['s3Key'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'content': _content, 'date': _date?.format(), 'imageUrl': _imageUrl, 's3Key': _s3Key, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'title': _title, 'content': _content, 'imageKey': _imageKey, 'date': _date?.format(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'title': _title,
     'content': _content,
+    'imageKey': _imageKey,
     'date': _date,
-    'imageUrl': _imageUrl,
-    's3Key': _s3Key,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -208,9 +191,9 @@ class Diary extends amplify_core.Model {
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final TITLE = amplify_core.QueryField(fieldName: "title");
   static final CONTENT = amplify_core.QueryField(fieldName: "content");
+  static final IMAGEKEY = amplify_core.QueryField(fieldName: "imageKey");
   static final DATE = amplify_core.QueryField(fieldName: "date");
-  static final IMAGEURL = amplify_core.QueryField(fieldName: "imageUrl");
-  static final S3KEY = amplify_core.QueryField(fieldName: "s3Key");
+  static final CREATEDAT = amplify_core.QueryField(fieldName: "createdAt");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Diary";
     modelSchemaDefinition.pluralName = "Diaries";
@@ -233,7 +216,7 @@ class Diary extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Diary.TITLE,
-      isRequired: true,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
@@ -244,27 +227,20 @@ class Diary extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Diary.IMAGEKEY,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Diary.DATE,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Diary.IMAGEURL,
+      key: Diary.CREATEDAT,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Diary.S3KEY,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'createdAt',
-      isRequired: false,
-      isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     

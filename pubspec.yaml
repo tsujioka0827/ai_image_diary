@@ -9,15 +9,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  # 必要なパッケージ一覧
+
+  # --- アイコン ---
   cupertino_icons: ^1.0.8
-  amplify_flutter: ^2.8.0
-  amplify_auth_cognito: ^2.8.0
+
+  # --- Amplify (AWS) 関連 ---
+  # バージョンを ^2.0.0 に統一して、互換性のある最新版を自動取得させます
+  amplify_flutter: ^2.0.0
+  amplify_auth_cognito: ^2.0.0
+  amplify_api: ^2.0.0
+  amplify_datastore: ^2.0.0
+  amplify_storage_s3: ^2.0.0
+  amplify_authenticator: ^2.0.0
+
+  # --- その他 ---
   flutter_dotenv: ^5.2.1
-  amplify_datastore: ^2.8.0
-  amplify_api: ^2.8.0
-  amplify_storage_s3: ^2.8.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

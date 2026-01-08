@@ -9,6 +9,12 @@ const amplifyconfig = '''{
                     "endpoint": "https://soddnyl2tngypj42of72dsopwm.appsync-api.ap-northeast-1.amazonaws.com/graphql",
                     "region": "ap-northeast-1",
                     "authorizationType": "AMAZON_COGNITO_USER_POOLS"
+                },
+                "apiForImage": {
+                    "endpointType": "REST",
+                    "endpoint": "https://3hp6919vub.execute-api.ap-northeast-1.amazonaws.com/dev",
+                    "region": "ap-northeast-1",
+                    "authorizationType": "AWS_IAM"
                 }
             }
         }
