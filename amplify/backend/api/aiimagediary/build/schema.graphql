@@ -1,11 +1,10 @@
 type Diary {
   id: ID!
-  title: String!
+  title: String
   content: String!
+  imageKey: String
   date: AWSDate!
-  imageUrl: String
-  s3Key: String
-  createdAt: AWSDateTime!
+  createdAt: AWSDateTime
   updatedAt: AWSDateTime!
   owner: String
 }
@@ -169,9 +168,8 @@ input ModelDiaryFilterInput {
   id: ModelIDInput
   title: ModelStringInput
   content: ModelStringInput
+  imageKey: ModelStringInput
   date: ModelStringInput
-  imageUrl: ModelStringInput
-  s3Key: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
   and: [ModelDiaryFilterInput]
@@ -188,33 +186,32 @@ type Query {
 input ModelDiaryConditionInput {
   title: ModelStringInput
   content: ModelStringInput
+  imageKey: ModelStringInput
   date: ModelStringInput
-  imageUrl: ModelStringInput
-  s3Key: ModelStringInput
+  createdAt: ModelStringInput
   and: [ModelDiaryConditionInput]
   or: [ModelDiaryConditionInput]
   not: ModelDiaryConditionInput
-  createdAt: ModelStringInput
   updatedAt: ModelStringInput
   owner: ModelStringInput
 }
 
 input CreateDiaryInput {
   id: ID
-  title: String!
+  title: String
   content: String!
+  imageKey: String
   date: AWSDate!
-  imageUrl: String
-  s3Key: String
+  createdAt: AWSDateTime
 }
 
 input UpdateDiaryInput {
   id: ID!
   title: String
   content: String
+  imageKey: String
   date: AWSDate
-  imageUrl: String
-  s3Key: String
+  createdAt: AWSDateTime
 }
 
 input DeleteDiaryInput {
@@ -231,9 +228,8 @@ input ModelSubscriptionDiaryFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
   content: ModelSubscriptionStringInput
+  imageKey: ModelSubscriptionStringInput
   date: ModelSubscriptionStringInput
-  imageUrl: ModelSubscriptionStringInput
-  s3Key: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionDiaryFilterInput]

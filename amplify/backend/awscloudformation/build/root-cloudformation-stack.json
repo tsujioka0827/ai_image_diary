@@ -199,6 +199,27 @@
         }
       }
     },
+    "APIGatewayAuthStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
+        "Parameters": {
+          "authRoleName": {
+            "Ref": "AuthRoleName"
+          },
+          "unauthRoleName": {
+            "Ref": "UnauthRoleName"
+          },
+          "env": "dev",
+          "apiForImage": {
+            "Fn::GetAtt": [
+              "apiapiForImage",
+              "Outputs.ApiId"
+            ]
+          }
+        }
+      }
+    },
     "apiaiimagediary": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -214,7 +235,28 @@
             ]
           },
           "S3DeploymentBucket": "amplify-aiimagediary-dev-33865-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/c02985f6fd7f9ea3a54429faf7f83c4340e0459e",
+          "S3DeploymentRootKey": "amplify-appsync-files/25715511bf17d4407ea211263706883cf8d21d2f",
+          "env": "dev"
+        }
+      }
+    },
+    "apiapiForImage": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/apiForImage-cloudformation-template.json",
+        "Parameters": {
+          "functiongenerateImageName": {
+            "Fn::GetAtt": [
+              "functiongenerateImage",
+              "Outputs.Name"
+            ]
+          },
+          "functiongenerateImageArn": {
+            "Fn::GetAtt": [
+              "functiongenerateImage",
+              "Outputs.Arn"
+            ]
+          },
           "env": "dev"
         }
       }
@@ -279,7 +321,7 @@
         "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "aiimagediary516e7981d63141faa54af17da6eccc08",
-          "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
+          "selectedGuestPermissions": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject",
           "selectedAuthenticatedPermissions": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject",
           "unauthRoleName": {
             "Ref": "UnauthRoleName"
@@ -300,8 +342,19 @@
           "s3PermissionsAuthenticatedProtected": "s3:PutObject,s3:GetObject,s3:DeleteObject",
           "s3PermissionsAuthenticatedPublic": "s3:PutObject,s3:GetObject,s3:DeleteObject",
           "s3PermissionsAuthenticatedUploads": "s3:PutObject",
-          "s3PermissionsGuestPublic": "s3:GetObject",
-          "s3PermissionsGuestUploads": "DISALLOW",
+          "s3PermissionsGuestPublic": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+          "s3PermissionsGuestUploads": "s3:PutObject",
+          "env": "dev"
+        }
+      }
+    },
+    "functiongenerateImage": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/function/generateImage-cloudformation-template.json",
+        "Parameters": {
+          "deploymentBucketName": "amplify-aiimagediary-dev-33865-deployment",
+          "s3Key": "amplify-builds/generateImage-62473865535251734650-build.zip",
           "env": "dev"
         }
       }

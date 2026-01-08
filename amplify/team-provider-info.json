@@ -9,17 +9,25 @@
       "UnauthRoleName": "amplify-aiimagediary-dev-33865-unauthRole",
       "StackName": "amplify-aiimagediary-dev-33865",
       "StackId": "arn:aws:cloudformation:ap-northeast-1:514994862031:stack/amplify-aiimagediary-dev-33865/11b65cb0-d743-11f0-be83-067fe0b7ca79",
-      "AmplifyAppId": "d3ggx8flauydu5"
+      "AmplifyAppId": "d3ggx8flauydu5",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-aiimagediary-dev-33865-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "aiimagediary8348a041": {}
       },
-      "api": {
-        "aiimagediary": {}
-      },
       "storage": {
         "s3afaf9083": {}
+      },
+      "function": {
+        "generateImage": {
+          "deploymentBucketName": "amplify-aiimagediary-dev-33865-deployment",
+          "s3Key": "amplify-builds/generateImage-62473865535251734650-build.zip"
+        }
+      },
+      "api": {
+        "aiimagediary": {},
+        "apiForImage": {}
       }
     }
   }
